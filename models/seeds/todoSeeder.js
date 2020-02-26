@@ -4,9 +4,6 @@ const Todo = require('../todo')
 mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true })
 const db = mongoose.connection
 
-// test db
-// console.log('db', db)
-
 db.on('error', () => {
   console.log('db error')
 })
