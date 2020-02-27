@@ -29,11 +29,16 @@ const Todo = require('./models/todo')
 // 設定路由
 // Todo 首頁
 app.get('/', (req, res) => {
-  res.render('index')
+  return res.redirect('/todos')
 })
 // 列出全部 Todo
 app.get('/todos', (req, res) => {
-  res.send('列出所有 Todo')
+  Todo.find()
+    .lean()
+    .exec((err, todos) => {
+      if (err) return console.error(err)
+      return res.render('index', { todos })
+    })
 })
 // 新增一筆 Todo 頁面
 app.get('/todos/new', (req, res) => {
