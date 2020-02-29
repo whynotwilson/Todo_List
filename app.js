@@ -36,6 +36,7 @@ app.get('/', (req, res) => {
 // 列出全部 Todo
 app.get('/todos', (req, res) => {
   Todo.find()
+    .sort({ name: 'asc' })
     .lean()
     .exec((err, todos) => {
       if (err) return console.error(err)
