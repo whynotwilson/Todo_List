@@ -1,5 +1,5 @@
 <!-- ./views/edit.handlebars -->
-<form action="/todos/{{{todo._id}}}/edit" method="POST">
+<form action="/todos/{{{todo._id}}}?_method=PUT" method="POST">
   <input type="checkbox" name="done" {{#if todo.done}} checked{{/if}} />
   <input type="text" placeholder="name" name="name" value="{{{todo.name}}}">
   <button type="submit">Edit</button>
