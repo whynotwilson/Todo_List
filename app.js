@@ -30,6 +30,7 @@ db.once('open', () => {
 // 設定路由器
 app.use('/', require('./routes/home'))
 app.use('/todos', require('./routes/todo'))
+app.use('/users', require('./routes/user'))
 
 app.listen(port, () => {
   console.log('To-do List is running on port', port)
