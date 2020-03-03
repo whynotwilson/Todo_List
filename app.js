@@ -1,10 +1,11 @@
 const express = require('express')
 const app = express()
-const port = 3000
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+const session = require('express-session')
+const port = 3000
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
@@ -26,6 +27,13 @@ db.on('error', () => {
 db.once('open', () => {
   console.log('mongodb connected!')
 })
+
+// 設定 session
+app.use(session({
+  secret: 'ALPHA camp Todo-List Session & Cookie function',
+  resave: false,
+  saveUninitialized: true
+}))
 
 // 設定路由器
 app.use('/', require('./routes/home'))
