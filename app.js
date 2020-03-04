@@ -5,12 +5,24 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const session = require('express-session')
+const passport = require('passport')
 const port = 3000
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
+
+// 設定 session
+app.use(session({
+  secret: 'ALPHA camp Todo-List Session & Cookie function',
+  resave: false,
+  saveUninitialized: true
+}))
+
+// passport.session() 要寫在 session() 之後
+app.use(passport.initialize())
+app.use(passport.session())
 
 // 資料庫連線
 mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -28,12 +40,13 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
-// 設定 session
-app.use(session({
-  secret: 'ALPHA camp Todo-List Session & Cookie function',
-  resave: false,
-  saveUninitialized: true
-}))
+require('./config/passport')(passport)
+
+// 登入後可以取得使用者的資訊方便我們在 view 裡面直接使用
+app.use((req, res, next) => {
+  res.locals.user = req.user
+  next()
+})
 
 // 設定路由器
 app.use('/', require('./routes/home'))
