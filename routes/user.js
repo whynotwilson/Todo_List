@@ -4,12 +4,12 @@ const User = require('../models/user')
 const passport = require('passport')
 
 // 登入頁面
-router.get('/', (req, res) => {
+router.get('/login', (req, res) => {
   res.render('login')
 })
 
 // 登入檢查
-router.post('/', (req, res, next) => {
+router.post('/login', (req, res, next) => {
   passport.authenticate('local', { // 使用 passport 認證
     successRedirect: '/', // 登入成功回到根目錄
     failureRedirect: '/users/login' // 登入失敗返回登入頁
@@ -54,7 +54,8 @@ router.post('/register', (req, res) => {
 
 // 登出
 router.get('/logout', (req, res) => {
-  res.send('logout')
+  req.logout()
+  res.redirect('/users/login')
 })
 
 module.exports = router
