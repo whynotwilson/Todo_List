@@ -25,7 +25,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // 資料庫連線
-mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 
 // 資料庫連線後，透過 mongoose.connection 拿到 Connection 的物件
 const db = mongoose.connection
