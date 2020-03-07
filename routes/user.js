@@ -25,49 +25,67 @@ router.get('/register', (req, res) => {
 // 註冊檢查
 router.post('/register', (req, res) => {
   const { name, email, password, password2 } = req.body
-  User.findOne({ email: email }).then(user => {
-    // 檢查要註冊的 email 是否已存在
-    if (user) {
-      // 已存在返回註冊頁面
-      console.log('User already exists')
-      res.render('register', {
-        name,
-        email,
-        password,
-        password2
-      })
-    } else {
-      // 不存在則新增使用者，新增完成後導回首頁
-      const newUser = new User({
-        name,
-        email,
-        password
-      })
 
-      // 用 bcrypt 處理密碼後再儲存
-      // 第一個參數是複雜度係數，預設為 10
-      // 再用 hash 把鹽跟使用者密碼配在一起，然後產生雜湊處理後的 hash
-      bcrypt.genSalt(10, (err, salt) => {
-        if (err) console.log(err)
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-          // throw，遇到 throw 後，當下執行的函式會停止，並交給後面的 catch 接手
-          if (err) throw err
-          newUser.password = hash
-          newUser
-            .save()
-            .then(user => {
-              res.redirect('/')
-            })
-            .catch(err => console.log(err))
+  // 錯誤訊息提示
+  const errors = []
+
+  if (!name || !email || !password || !password2) {
+    errors.push({ message: '所有欄位都是必填' })
+  }
+
+  if (password !== password2) {
+    errors.push({ message: '二次密碼不一致' })
+  }
+
+  if (errors.length > 0) {
+    res.render('register', {
+      errors,
+      name,
+      email,
+      password,
+      password2
+    })
+  } else {
+    User.findOne({ email: email }).then(user => {
+      if (user) {
+        // 加入訊息提示
+        errors.push({ message: '這個 Email 已註冊過' })
+        res.render('register', {
+          errors,
+          name,
+          email,
+          password,
+          password2
         })
-      })
-    }
-  })
+      } else {
+        const newUser = new User({
+          name,
+          email,
+          password
+        })
+        bcrypt.genSalt(10, (err, salt) => {
+          if (err) console.log(err)
+
+          bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) throw err
+            newUser.password = hash
+            newUser
+              .save()
+              .then(user => {
+                res.redirect('/')
+              })
+              .catch(err => console.log(err))
+          })
+        })
+      }
+    })
+  }
 })
 
 // 登出
 router.get('/logout', (req, res) => {
   req.logout()
+  req.flash('success_msg', '你已經成功登出')
   res.redirect('/users/login')
 })
 
